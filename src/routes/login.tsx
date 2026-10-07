@@ -109,7 +109,7 @@ function LoginPage() {
           </div>
         </header>
 
-        <section className={`auth-panel ${shake > 0 ? "error-shake" : ""}`} key={shake}>
+        <section className={`auth-panel ${shake > 0 ? "error-shake" : ""}`}>
           <div className="px-6 pb-7 pt-7 sm:px-8 sm:pb-8 sm:pt-8">
             <div className="mb-7">
               <div className="mb-5 flex size-10 items-center justify-center rounded-lg border border-border bg-secondary/80 text-primary">
