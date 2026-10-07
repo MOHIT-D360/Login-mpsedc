@@ -137,7 +137,7 @@ function LoginPage() {
                     id="identity"
                     name="usernameOrEmail"
                     autoComplete="username"
-                    placeholder="Enter your username or email"
+                    placeholder="Username or email"
                     value={identity}
                     onChange={(event) => setIdentity(event.target.value)}
                     aria-invalid={Boolean(errors.identity)}
