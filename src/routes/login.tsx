@@ -306,12 +306,7 @@ function LoginPage() {
             </form>
           </div>
 
-          <div className="flex items-center justify-between border-t border-border/70 bg-background/15 px-6 py-3.5 text-[0.62rem] uppercase tracking-[0.1em] text-muted-foreground sm:px-8">
-            <span>Encrypted connection</span>
-            <span className="flex items-center gap-1.5">
-              <span className="size-1 rounded-full bg-accent" /> Members only
-            </span>
-          </div>
+          
         </section>
       </div>
     </main>
