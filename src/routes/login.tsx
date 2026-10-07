@@ -1,11 +1,21 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
-import { ArrowRight, Eye, EyeOff, Fingerprint, KeyRound, LoaderCircle, RefreshCw, UserRound } from "lucide-react";
+import {
+  ArrowRight,
+  Eye,
+  EyeOff,
+  Fingerprint,
+  KeyRound,
+  LoaderCircle,
+  RefreshCw,
+  UserRound,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { authenticate, saveSession } from "@/lib/auth-service";
 import { createCaptcha, matchesCaptcha } from "@/lib/captcha";
+import { validatePassword } from "@/lib/password-validation";
 
 type FieldErrors = { identity?: string; password?: string; captcha?: string; form?: string };
 
@@ -54,10 +64,18 @@ function LoginPage() {
     const trimmedIdentity = identity.trim();
     if (!trimmedIdentity) {
       nextErrors.identity = "Username or email is required.";
-    } else if (trimmedIdentity.includes("@") && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedIdentity)) {
+    } else if (
+      trimmedIdentity.includes("@") &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedIdentity)
+    ) {
       nextErrors.identity = "Enter a valid email address.";
     }
-    if (!password) nextErrors.password = "Password is required.";
+    const passwordValidation = validatePassword(password);
+    if (!password) {
+      nextErrors.password = "Password is required.";
+    } else if (!passwordValidation.valid) {
+      nextErrors.password = passwordValidation.errors.join(" ");
+    }
     if (!captchaEntry.trim()) {
       nextErrors.captcha = "Please enter the CAPTCHA.";
     } else if (!matchesCaptcha(captcha, captchaEntry)) {
@@ -78,8 +96,7 @@ function LoginPage() {
       await navigate({ to: "/welcome" });
     } catch (error) {
       setErrors({
-        form:
-          error instanceof Error ? error.message : "Unable to sign in. Please try again.",
+        form: error instanceof Error ? error.message : "Unable to sign in. Please try again.",
       });
       refreshCaptcha();
       setShake((value) => value + 1);
@@ -128,11 +145,17 @@ function LoginPage() {
 
             <form onSubmit={handleSubmit} noValidate className="space-y-[1.05rem]">
               <div>
-                <label htmlFor="identity" className="mb-2 block text-[0.78rem] font-medium text-foreground/90">
+                <label
+                  htmlFor="identity"
+                  className="mb-2 block text-[0.78rem] font-medium text-foreground/90"
+                >
                   Username / Email
                 </label>
                 <div className="field-shell flex items-center rounded-md border border-input bg-background/45 px-3 transition-all duration-200">
-                  <UserRound className="mr-2.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                  <UserRound
+                    className="mr-2.5 size-4 shrink-0 text-muted-foreground"
+                    aria-hidden="true"
+                  />
                   <Input
                     id="identity"
                     name="usernameOrEmail"
@@ -145,15 +168,25 @@ function LoginPage() {
                     disabled={loading}
                   />
                 </div>
-                {errors.identity && <p className="field-error mt-1.5 text-xs text-destructive" id="identity-error">{errors.identity}</p>}
+                {errors.identity && (
+                  <p className="field-error mt-1.5 text-xs text-destructive" id="identity-error">
+                    {errors.identity}
+                  </p>
+                )}
               </div>
 
               <div>
-                <label htmlFor="password" className="mb-2 block text-[0.78rem] font-medium text-foreground/90">
+                <label
+                  htmlFor="password"
+                  className="mb-2 block text-[0.78rem] font-medium text-foreground/90"
+                >
                   Password
                 </label>
                 <div className="field-shell flex items-center rounded-md border border-input bg-background/45 px-3 transition-all duration-200">
-                  <KeyRound className="mr-2.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                  <KeyRound
+                    className="mr-2.5 size-4 shrink-0 text-muted-foreground"
+                    aria-hidden="true"
+                  />
                   <Input
                     id="password"
                     name="password"
@@ -179,18 +212,33 @@ function LoginPage() {
                     {showPassword ? <EyeOff /> : <Eye />}
                   </Button>
                 </div>
-                {errors.password && <p className="field-error mt-1.5 text-xs text-destructive" id="password-error">{errors.password}</p>}
+                {errors.password && (
+                  <p className="field-error mt-1.5 text-xs text-destructive" id="password-error">
+                    {errors.password}
+                  </p>
+                )}
               </div>
 
               <div>
                 <div className="mb-2 flex items-center justify-between gap-2">
-                  <label htmlFor="captcha-entry" className="text-[0.78rem] font-medium text-foreground/90">CAPTCHA</label>
+                  <label
+                    htmlFor="captcha-entry"
+                    className="text-[0.78rem] font-medium text-foreground/90"
+                  >
+                    CAPTCHA
+                  </label>
                   <span className="text-[0.65rem] text-muted-foreground">Not case-sensitive</span>
                 </div>
                 <div className="flex items-stretch gap-2.5">
-                  <div className="captcha-board flex min-h-[3.45rem] flex-1 items-center justify-center gap-2 rounded-md border border-border px-4" aria-label={`CAPTCHA: ${captcha}`}>
+                  <div
+                    className="captcha-board flex min-h-[3.45rem] flex-1 items-center justify-center gap-2 rounded-md border border-border px-4"
+                    aria-label={`CAPTCHA: ${captcha}`}
+                  >
                     {captcha.split("").map((character, index) => (
-                      <span className={`captcha-glyph-${index % 5} font-display text-[1.25rem] font-semibold tracking-[0.14em] text-foreground/90`} key={`${captcha}-${index}`}>
+                      <span
+                        className={`captcha-glyph-${index % 5} font-display text-[1.25rem] font-semibold tracking-[0.14em] text-foreground/90`}
+                        key={`${captcha}-${index}`}
+                      >
                         {character}
                       </span>
                     ))}
@@ -220,20 +268,39 @@ function LoginPage() {
                     disabled={loading}
                   />
                 </div>
-                {errors.captcha && <p className="field-error mt-1.5 text-xs text-destructive" id="captcha-error" role="alert">{errors.captcha}</p>}
+                {errors.captcha && (
+                  <p
+                    className="field-error mt-1.5 text-xs text-destructive"
+                    id="captcha-error"
+                    role="alert"
+                  >
+                    {errors.captcha}
+                  </p>
+                )}
               </div>
 
               {errors.form && (
-                <p className="field-error rounded-md border border-destructive/25 bg-destructive/10 px-3 py-2.5 text-sm text-destructive" role="alert">
+                <p
+                  className="field-error rounded-md border border-destructive/25 bg-destructive/10 px-3 py-2.5 text-sm text-destructive"
+                  role="alert"
+                >
                   {errors.form}
                 </p>
               )}
 
-              <Button type="submit" className="login-submit mt-1 h-12 w-full rounded-md text-[0.8rem] font-semibold uppercase tracking-[0.12em]" disabled={loading}>
+              <Button
+                type="submit"
+                className="login-submit mt-1 h-12 w-full rounded-md text-[0.8rem] font-semibold uppercase tracking-[0.12em]"
+                disabled={loading}
+              >
                 {loading ? (
-                  <><LoaderCircle className="size-4 animate-spin" /> Authenticating...</>
+                  <>
+                    <LoaderCircle className="size-4 animate-spin" /> Authenticating...
+                  </>
                 ) : (
-                  <>Login <ArrowRight className="size-4" /></>
+                  <>
+                    Login <ArrowRight className="size-4" />
+                  </>
                 )}
               </Button>
             </form>
@@ -241,16 +308,11 @@ function LoginPage() {
 
           <div className="flex items-center justify-between border-t border-border/70 bg-background/15 px-6 py-3.5 text-[0.62rem] uppercase tracking-[0.1em] text-muted-foreground sm:px-8">
             <span>Encrypted connection</span>
-            <span className="flex items-center gap-1.5"><span className="size-1 rounded-full bg-accent" /> Members only</span>
+            <span className="flex items-center gap-1.5">
+              <span className="size-1 rounded-full bg-accent" /> Members only
+            </span>
           </div>
         </section>
-
-        <footer className="mt-5 flex items-center justify-center gap-2 text-[0.65rem] text-muted-foreground/80">
-          <span className="size-1 rounded-full bg-primary/70" />
-          <span>S3 Eternals</span>
-          <span aria-hidden="true">·</span>
-          <span>Secure identity gateway</span>
-        </footer>
       </div>
     </main>
   );
