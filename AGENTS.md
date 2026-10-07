@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep sign-in in TanStack file routes and isolate credential requests in a browser-safe auth service, because the Java API owns credential verification while the app handles CAPTCHA and the lightweight UI session.
