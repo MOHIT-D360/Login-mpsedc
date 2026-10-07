@@ -11,7 +11,7 @@ export async function authenticate(
   usernameOrEmail: string,
   password: string,
 ): Promise<AuthenticatedUser> {
-  const baseUrl = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/$/, "");
+  const baseUrl = (import.meta.env["VITE_API_BASE_URL"] ?? "").replace(/\/$/, "");
   let response: Response;
 
   try {

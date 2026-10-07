@@ -34,10 +34,16 @@ function LoginPage() {
 
   useEffect(() => setCaptcha(createCaptcha()), []);
 
-  function refreshCaptcha() {
+  function refreshCaptcha(clearCaptchaError = true) {
     setCaptcha(createCaptcha());
     setCaptchaEntry("");
-    setErrors((previous) => ({ ...previous, captcha: undefined }));
+    if (clearCaptchaError) {
+      setErrors((previous) => {
+        const next = { ...previous };
+        delete next.captcha;
+        return next;
+      });
+    }
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -61,7 +67,7 @@ function LoginPage() {
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) {
       setShake((value) => value + 1);
-      if (nextErrors.captcha) refreshCaptcha();
+      if (nextErrors.captcha) refreshCaptcha(false);
       return;
     }
 
