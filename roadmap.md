@@ -1,0 +1,4 @@
+- [x] Replace the placeholder with a responsive S3 Eternals login screen and CAPTCHA.
+- [x] Connect login to the configurable Java authentication endpoint and add the welcome/logout flow.
+- [x] Guard the welcome page, add route metadata, and cover CAPTCHA behavior with tests.
+- [ ] Verify the live login flow and inspect current build diagnostics.
