@@ -200,7 +200,7 @@ function LoginPage() {
                     variant="outline"
                     size="icon"
                     className="size-[3.45rem] shrink-0 border-border bg-secondary/70 text-muted-foreground hover:text-primary"
-                    onClick={refreshCaptcha}
+                    onClick={() => refreshCaptcha()}
                     aria-label="Refresh CAPTCHA"
                     title="Refresh CAPTCHA"
                   >
